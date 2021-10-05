@@ -42,6 +42,8 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
         ),
     )
 
+    private var userAdapter: UserAdapter? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -54,16 +56,14 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initList()
-        binding.addFab.setOnClickListener {
-
-        }
+        binding.addFab.setOnClickListener { addUser() }
+        userAdapter?.updateUsers(users)
     }
 
-
-
     private fun initList() {
+        userAdapter = UserAdapter()
         with(binding.userList) {
-            adapter = UserAdapter(users + users + users)
+            adapter = userAdapter
             layoutManager = LinearLayoutManager(requireContext())
             //размер не будет изменяться со временем
             setHasFixedSize(true)
@@ -73,5 +73,6 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
     private fun addUser() {
         val newUser = users.random()
         users = listOf(newUser) + users
+        userAdapter?.updateUsers(users)
     }
 }

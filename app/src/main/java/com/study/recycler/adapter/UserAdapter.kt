@@ -12,8 +12,9 @@ import com.study.recycler.data.User
 import com.study.recycler.extensions.inflate
 
 class UserAdapter(
-    private val users: List<User>
 ) : RecyclerView.Adapter<UserAdapter.Holder>() {
+
+    private var users: List<User> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         return Holder(parent.inflate(R.layout.item_user))
@@ -24,6 +25,11 @@ class UserAdapter(
     }
 
     override fun getItemCount(): Int = users.size
+
+    fun updateUsers(newUsers: List<User>) {
+        users = newUsers
+        notifyDataSetChanged()
+    }
 
     class Holder(view: View) : RecyclerView.ViewHolder(view) {
         private val nameTextView: TextView = view.findViewById(R.id.nameTextView)
