@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.study.recycler.adapter.UserAdapter
 import com.study.recycler.data.User
-import com.study.recycler.databinding.ActivityMainBinding
+import com.study.recycler.util.AutoClearedValue
 import com.study.recycler.databinding.FragmentUserListBinding
 
 class UserListFragment : Fragment(R.layout.fragment_user_list) {
@@ -42,7 +42,7 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
         ),
     )
 
-    private var userAdapter: UserAdapter? = null
+    private var userAdapter: UserAdapter by AutoClearedValue(this)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,15 +53,21 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initList()
         binding.addFab.setOnClickListener { addUser() }
-        userAdapter?.updateUsers(users)
+        userAdapter.updateUsers(users)
+        userAdapter.notifyItemRangeInserted(0, users.size)
     }
 
     private fun initList() {
-        userAdapter = UserAdapter()
+        userAdapter = UserAdapter {position -> deleteUser(position) }
         with(binding.userList) {
             adapter = userAdapter
             layoutManager = LinearLayoutManager(requireContext())
@@ -70,9 +76,17 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
         }
     }
 
+    private fun deleteUser(position: Int) {
+        users = users.filterIndexed{index, user -> index != position}
+        userAdapter.updateUsers(users)
+        userAdapter.notifyItemRemoved(position)
+    }
+
     private fun addUser() {
         val newUser = users.random()
         users = listOf(newUser) + users
-        userAdapter?.updateUsers(users)
+        userAdapter.updateUsers(users)
+        userAdapter.notifyItemInserted(0)
+        binding.userList.scrollToPosition(0)
     }
 }

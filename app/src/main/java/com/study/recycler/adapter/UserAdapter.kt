@@ -12,12 +12,13 @@ import com.study.recycler.data.User
 import com.study.recycler.extensions.inflate
 
 class UserAdapter(
+    private val onItemClicked: (position: Int) -> Unit
 ) : RecyclerView.Adapter<UserAdapter.Holder>() {
 
     private var users: List<User> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        return Holder(parent.inflate(R.layout.item_user))
+        return Holder(parent.inflate(R.layout.item_user), onItemClicked)
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
@@ -28,14 +29,22 @@ class UserAdapter(
 
     fun updateUsers(newUsers: List<User>) {
         users = newUsers
-        notifyDataSetChanged()
     }
 
-    class Holder(view: View) : RecyclerView.ViewHolder(view) {
+    class Holder(
+        view: View,
+        private val onItemClicked: (position: Int) -> Unit
+    ) : RecyclerView.ViewHolder(view) {
         private val nameTextView: TextView = view.findViewById(R.id.nameTextView)
         private val ageTextView: TextView = view.findViewById(R.id.ageTextView)
         private val developerTextView: TextView = view.findViewById(R.id.devTextView)
         private val avatarImageView: ImageView = view.findViewById(R.id.avatarImageView)
+
+        init {
+            view.setOnClickListener {
+                onItemClicked(bindingAdapterPosition)
+            }
+        }
 
         fun bind(user: User) {
             nameTextView.text = user.name
