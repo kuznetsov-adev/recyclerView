@@ -1,19 +1,16 @@
 package com.study.recycler.holder
 
 import android.view.View
-import android.widget.TextView
-import com.study.recycler.R
 import com.study.recycler.data.Person
+import kotlinx.android.synthetic.main.item_developer.*
 
 class DeveloperHolder(
-    view: View,
+    override val containerView: View,
     onItemClicked: (position: Int) -> Unit
-) : BasePersonHolder(view, onItemClicked) {
-
-    private val programmingLanguageView: TextView = view.findViewById(R.id.programmingLanguageTextView)
+) : BasePersonHolder(containerView, onItemClicked) {
 
     fun bind(person: Person.Developer) {
         bindMainInfo(person.name, person.avatarLink, person.age)
-        programmingLanguageView.text = person.programmingLanguage
+        programmingLanguageTextView.text = person.programmingLanguage
     }
 }
