@@ -12,6 +12,7 @@ import com.study.recycler.adapter.PersonAdapter
 import com.study.recycler.data.Person
 import com.study.recycler.databinding.FragmentUserListBinding
 import com.study.recycler.util.AutoClearedValue
+import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 
 class PersonListFragment : Fragment(R.layout.fragment_user_list) {
     private var _binding: FragmentUserListBinding? = null
@@ -76,6 +77,7 @@ class PersonListFragment : Fragment(R.layout.fragment_user_list) {
             setHasFixedSize(true)
             val vDividerItemDecoration = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
             addItemDecoration(vDividerItemDecoration)
+            itemAnimator = ScaleInAnimator()
         }
     }
 
