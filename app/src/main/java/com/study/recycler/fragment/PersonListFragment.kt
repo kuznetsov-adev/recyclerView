@@ -69,7 +69,7 @@ class PersonListFragment : Fragment(R.layout.fragment_user_list) {
         super.onViewCreated(view, savedInstanceState)
         initList()
         binding.addFab.setOnClickListener { addPerson() }
-        personAdapter.updatePersons(persons)
+        personAdapter.items = persons
     }
 
     private fun initList() {
@@ -87,7 +87,7 @@ class PersonListFragment : Fragment(R.layout.fragment_user_list) {
 
     private fun deletePerson(position: Int) {
         persons = persons.filterIndexed{ index, user -> index != position}
-        personAdapter.updatePersons(persons)
+        personAdapter.items = persons
     }
 
     private fun addPerson() {
@@ -98,7 +98,7 @@ class PersonListFragment : Fragment(R.layout.fragment_user_list) {
             }
         }
         persons = listOf(newUser) + persons
-        personAdapter.updatePersons(persons)
+        personAdapter.items = persons
         binding.userList.scrollToPosition(0)
     }
 }

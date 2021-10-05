@@ -1,43 +1,30 @@
 package com.study.recycler.adapter
 
-import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.RecyclerView
-import com.hannesdorfmann.adapterdelegates4.AdapterDelegatesManager
-import com.study.recycler.R
+import androidx.recyclerview.widget.DiffUtil
+import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import com.study.recycler.data.Person
-import com.study.recycler.extensions.inflate
-import com.study.recycler.holder.DeveloperHolder
-import com.study.recycler.holder.UserHolder
-import com.study.recycler.util.PersonDiffUtilCallback
 
 class PersonAdapter(
     onItemClicked: (position: Int) -> Unit
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    private val differ = AsyncListDiffer(this, PersonDiffUtilCallback())
-    private val delegatesManager = AdapterDelegatesManager<List<Person>>()
+) : AsyncListDifferDelegationAdapter<Person>(PersonDiffUtilCallback()) {
 
     init {
         delegatesManager.addDelegate(UserAdapterDelegate(onItemClicked))
             .addDelegate(DeveloperAdapterDelegate(onItemClicked))
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return delegatesManager.onCreateViewHolder(parent, viewType)
-    }
+    class PersonDiffUtilCallback : DiffUtil.ItemCallback<Person>(){
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-       delegatesManager.onBindViewHolder(differ.currentList, position, holder)
-    }
+        override fun areItemsTheSame(oldItem: Person, newItem: Person): Boolean {
+            return when {
+                oldItem is Person.Developer && newItem is Person.Developer -> oldItem.id == newItem.id
+                oldItem is Person.User && newItem is Person.User -> oldItem.id == newItem.id
+                else -> false
+            }
+        }
 
-    override fun getItemCount(): Int = differ.currentList.size
-
-    override fun getItemViewType(position: Int): Int {
-        return delegatesManager.getItemViewType(differ.currentList, position)
-    }
-
-    fun updatePersons(newPerson: List<Person>) {
-        differ.submitList(newPerson)
+        override fun areContentsTheSame(oldItem: Person, newItem: Person): Boolean {
+            return oldItem == newItem
+        }
     }
 }
