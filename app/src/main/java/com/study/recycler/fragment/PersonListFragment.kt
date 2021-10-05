@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.study.recycler.R
 import com.study.recycler.adapter.PersonAdapter
@@ -73,6 +74,8 @@ class PersonListFragment : Fragment(R.layout.fragment_user_list) {
             layoutManager = LinearLayoutManager(requireContext())
             //размер не будет изменяться со временем
             setHasFixedSize(true)
+            val vDividerItemDecoration = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+            addItemDecoration(vDividerItemDecoration)
         }
     }
 
