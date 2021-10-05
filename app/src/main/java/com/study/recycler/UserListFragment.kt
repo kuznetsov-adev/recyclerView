@@ -1,10 +1,21 @@
 package com.study.recycler
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.study.recycler.adapter.UserAdapter
 import com.study.recycler.data.User
+import com.study.recycler.databinding.ActivityMainBinding
+import com.study.recycler.databinding.FragmentUserListBinding
 
 class UserListFragment : Fragment(R.layout.fragment_user_list) {
-    private val users = listOf(
+    private var _binding: FragmentUserListBinding? = null
+    private val binding get() = _binding!!
+
+    private var users = listOf(
         User(
             name = "John Smith",
             avatarLink = "https://cdn.pixabay.com/photo/2014/04/03/10/32/businessman-310819_1280.png",
@@ -30,4 +41,37 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
             isDeveloper = true
         ),
     )
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentUserListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initList()
+        binding.addFab.setOnClickListener {
+
+        }
+    }
+
+
+
+    private fun initList() {
+        with(binding.userList) {
+            adapter = UserAdapter(users + users + users)
+            layoutManager = LinearLayoutManager(requireContext())
+            //размер не будет изменяться со временем
+            setHasFixedSize(true)
+        }
+    }
+
+    private fun addUser() {
+        val newUser = users.random()
+        users = listOf(newUser) + users
+    }
 }
