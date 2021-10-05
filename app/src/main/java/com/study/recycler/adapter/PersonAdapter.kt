@@ -3,6 +3,7 @@ package com.study.recycler.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
+import com.hannesdorfmann.adapterdelegates4.AdapterDelegatesManager
 import com.study.recycler.R
 import com.study.recycler.data.Person
 import com.study.recycler.extensions.inflate
@@ -11,53 +12,32 @@ import com.study.recycler.holder.UserHolder
 import com.study.recycler.util.PersonDiffUtilCallback
 
 class PersonAdapter(
-    private val onItemClicked: (position: Int) -> Unit
+    onItemClicked: (position: Int) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val differ = AsyncListDiffer(this, PersonDiffUtilCallback())
+    private val delegatesManager = AdapterDelegatesManager<List<Person>>()
+
+    init {
+        delegatesManager.addDelegate(UserAdapterDelegate(onItemClicked))
+            .addDelegate(DeveloperAdapterDelegate(onItemClicked))
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when(viewType) {
-            TYPE_USER -> UserHolder(parent.inflate(R.layout.item_user), onItemClicked)
-            TYPE_DEVELOPER -> DeveloperHolder(parent.inflate(R.layout.item_developer), onItemClicked)
-            else -> error("Incorrect viewType = $viewType")
-        }
+        return delegatesManager.onCreateViewHolder(parent, viewType)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(holder) {
-            is UserHolder -> {
-                val person = differ.currentList[position].let { it as? Person.User }
-                    ?: error("Person at position = $position is not a User")
-                holder.bind(person)
-            }
-            is DeveloperHolder -> {
-                val person = differ.currentList[position].let { it as? Person.Developer }
-                    ?: error("Person at position = $position is not a Developer")
-                holder.bind(person)
-            }
-
-            else -> error("Incorrect view holder = $holder")
-        }
+       delegatesManager.onBindViewHolder(differ.currentList, position, holder)
     }
 
     override fun getItemCount(): Int = differ.currentList.size
 
     override fun getItemViewType(position: Int): Int {
-        return when(differ.currentList[position]) {
-            is Person.Developer -> TYPE_DEVELOPER
-            is Person.User -> TYPE_USER
-        }
+        return delegatesManager.getItemViewType(differ.currentList, position)
     }
 
     fun updatePersons(newPerson: List<Person>) {
         differ.submitList(newPerson)
-    }
-
-
-
-    companion object {
-        private const val TYPE_USER = 1
-        private const val TYPE_DEVELOPER = 2
     }
 }
